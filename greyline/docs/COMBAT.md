@@ -4,9 +4,8 @@ Status: Combat Production Baseline
 Product: Greyline
 
 플레이어가 느끼는 전투 경험과, 그것을 런타임 동작으로 만드는 규칙을 함께 소유한다.
-공용 데이터 계약(인터페이스, `DamageInfo` 메타데이터)은 `Docs/SHARED_COMBAT_CONTRACTS.md`,
-전투가 콘텐츠에 배치되는 방식은 `CONTENT_DESIGN.md`가 소유한다. 세부 수치는 Play 튜닝으로
-정하고, 플레이 경험의 의미가 바뀔 때만 이 문서를 갱신한다.
+시스템 간 public 데이터 계약(인터페이스, `DamageInfo` 메타데이터)은 `COMBAT_CONTRACTS.md`가
+소유한다. 세부 수치는 Play 튜닝으로 정하고, 플레이 경험의 의미가 바뀔 때만 이 문서를 갱신한다.
 
 ## Target
 

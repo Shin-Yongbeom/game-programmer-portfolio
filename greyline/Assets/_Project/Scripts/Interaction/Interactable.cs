@@ -8,8 +8,8 @@ namespace Greyline.Interaction
     /// flag to true. Optionally one-shot, tracked by a second "consumed" flag so a used object is
     /// never re-triggered (and, once a save system exists, that state persists for free).
     ///
-    /// Deliberately not wired to Input, a player controller, or an interaction router yet
-    /// (Docs/SYSTEMS_QUEST_INTERACTION_SAVE.md). Those need the shared input asset / Player prefab.
+    /// Deliberately not wired to Input, a player controller, or an interaction router yet.
+    /// Those need the shared input asset / Player prefab.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class Interactable : MonoBehaviour

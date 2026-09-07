@@ -5,42 +5,42 @@ param(
 
 $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot/Greyline-UnityResult.ps1"
-$astraProject = Split-Path -Parent $PSScriptRoot
-$astraEditor = 'C:\Program Files\Unity\Hub\Editor\6000.3.23f1\Editor\Unity.exe'
+$unityProject = Split-Path -Parent $PSScriptRoot
+$unityEditor = 'C:\Program Files\Unity\Hub\Editor\6000.3.23f1\Editor\Unity.exe'
 & "$PSScriptRoot/Greyline-ResourcePreflight.ps1" -Operation Unity
 
-$astraMethods = @{
+$unityMethods = @{
     Build = 'Greyline.World.EditorTools.ProductionDistrictCombatBuilder.BuildFromCommandLine'
     Play = 'Greyline.World.EditorTools.ProductionDistrictPlayQA.RunFromCommandLine'
     Combat = 'Greyline.World.EditorTools.ProductionDistrictPlayQA.RunCombatFromCommandLine'
 }
-$astraMarkers = @{
-    Build = 'ASTRA_PRODUCTION_BUILD_OK'
+$unityMarkers = @{
+    Build = 'GREYLINE_BUILD_OK'
     Play = 'PRODUCTION_DISTRICT_PLAY_QA_OK'
     Combat = 'PRODUCTION_DISTRICT_PLAY_QA_OK'
 }
-$astraLogRoot = Join-Path $astraProject 'Logs'
-New-Item -ItemType Directory -Force -Path $astraLogRoot | Out-Null
-$astraStamp = Get-Date -Format 'yyyyMMdd-HHmmss'
-$astraLog = Join-Path $astraLogRoot "astra-$Operation-$astraStamp.log"
-$astraErr = Join-Path $astraLogRoot "astra-$Operation-$astraStamp-stderr.log"
-$astraArguments = @('-batchmode','-force-d3d11','-projectPath',('"' + $astraProject + '"'),'-executeMethod',$astraMethods[$Operation],'-logFile','-')
-if ($Operation -eq 'Build') { $astraArguments = @('-quit') + $astraArguments }
+$unityLogRoot = Join-Path $unityProject 'Logs'
+New-Item -ItemType Directory -Force -Path $unityLogRoot | Out-Null
+$unityStamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+$unityLog = Join-Path $unityLogRoot "greyline-$Operation-$unityStamp.log"
+$unityErr = Join-Path $unityLogRoot "greyline-$Operation-$unityStamp-stderr.log"
+$unityArguments = @('-batchmode','-force-d3d11','-projectPath',('"' + $unityProject + '"'),'-executeMethod',$unityMethods[$Operation],'-logFile','-')
+if ($Operation -eq 'Build') { $unityArguments = @('-quit') + $unityArguments }
 
 # GUI executables can return immediately when invoked with '&'. Redirect and wait on the actual
 # process so a shell exit code or empty stdout cannot be mistaken for a verified Unity operation.
-$astraProcess = Start-Process -FilePath $astraEditor -ArgumentList $astraArguments -WindowStyle Hidden `
-    -RedirectStandardOutput $astraLog -RedirectStandardError $astraErr -PassThru
+$unityProcess = Start-Process -FilePath $unityEditor -ArgumentList $unityArguments -WindowStyle Hidden `
+    -RedirectStandardOutput $unityLog -RedirectStandardError $unityErr -PassThru
 # Cache the OS handle while Unity is alive: Windows PowerShell can otherwise return a null
 # ExitCode after WaitForExit even when Unity actually exited successfully.
-$null = $astraProcess.Handle
-Write-Output "UnityPid=$($astraProcess.Id) Operation=$Operation Log=$astraLog"
-$astraProcess.WaitForExit()
-$astraCode = $astraProcess.ExitCode
-$astraResult = Test-GreylineUnityResult -ExitCode $astraCode -SuccessMarker $astraMarkers[$Operation] `
-    -LogText ([string](Get-Content -LiteralPath $astraLog -Raw)) `
-    -ErrorText ([string](Get-Content -LiteralPath $astraErr -Raw))
-if (-not $astraResult.Passed) {
-    throw "Unity $Operation failed: $($astraResult.Reason). Exit=$astraCode Log=$astraLog Stderr=$astraErr"
+$null = $unityProcess.Handle
+Write-Output "UnityPid=$($unityProcess.Id) Operation=$Operation Log=$unityLog"
+$unityProcess.WaitForExit()
+$unityCode = $unityProcess.ExitCode
+$unityResult = Test-GreylineUnityResult -ExitCode $unityCode -SuccessMarker $unityMarkers[$Operation] `
+    -LogText ([string](Get-Content -LiteralPath $unityLog -Raw)) `
+    -ErrorText ([string](Get-Content -LiteralPath $unityErr -Raw))
+if (-not $unityResult.Passed) {
+    throw "Unity $Operation failed: $($unityResult.Reason). Exit=$unityCode Log=$unityLog Stderr=$unityErr"
 }
-Write-Output "Unity $Operation verified. Exit=$astraCode Marker=$($astraMarkers[$Operation]) Log=$astraLog"
+Write-Output "Unity $Operation verified. Exit=$unityCode Marker=$($unityMarkers[$Operation]) Log=$unityLog"

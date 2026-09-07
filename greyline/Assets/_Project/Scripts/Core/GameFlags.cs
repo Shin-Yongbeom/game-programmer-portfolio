@@ -6,7 +6,7 @@ namespace Greyline.Core
     /// <summary>
     /// Minimal global progression state: named boolean flags.
     ///
-    /// Scope note (Docs/SYSTEMS_QUEST_INTERACTION_SAVE.md): this is deliberately bool-only.
+    /// Scope note: this is deliberately bool-only.
     /// The int/string generic store, event sink, and save serialization are out of scope until a
     /// vertical-slice requirement forces them. Quest / interaction one-shot state / dialogue branches
     /// all reduce to a flag being set, so a bool map is the smallest contract that proves the

@@ -22,7 +22,7 @@ namespace Greyline.World.EditorTools
             Greyline.EditorTools.EnemyEncounterValidation.Validate();
             Greyline.EditorTools.CharacterCombatValidator.ValidateAll();
             ProductionDefenseValidation.Validate();
-            Debug.Log("ASTRA_PRODUCTION_BUILD_OK");
+            Debug.Log("GREYLINE_BUILD_OK");
         }
 
         [MenuItem("Greyline/World/Assemble District Combat")]

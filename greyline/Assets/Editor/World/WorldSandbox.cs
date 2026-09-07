@@ -428,17 +428,14 @@ namespace Greyline.World.EditorTools
         /// existing "WorldB_EntryAlley" corridor (x in [-5,5], z in [-124,-96]), before the first
         /// boulevard crossing at z=-92 and the campus arrival occluders (z=-86 / z=-56). Placed
         /// inside the existing corridor deliberately so it does not move or renumber any
-        /// already-reviewed CampusA/WorldB coordinate. See
-        /// Assets/Editor/World/WorldMarketAlleyReferenceBrief.md and
-        /// Docs/ASTRA_START_HERE.md for the current field target.
+        /// already-reviewed CampusA/WorldB coordinate. See the layout notes for the current field target.
         /// </summary>
         private static void UpdateMarketAlley(Scene scene, Dictionary<string, Material> materials)
         {
             GameObject root = GetOrCreateRoot(scene, "Massing");
             HashSet<string> built = new HashSet<string>();
 
-            // Covered aisle: overhead cover is the segment's medium occluder (BOTW-translation
-            // rule in WORLD_LEVEL_DESIGN_GUIDE.md Sec.5) and reads as a roofed market hall.
+            // Covered aisle: overhead cover is the segment's medium occluder and reads as a roofed market hall.
             // Sits just above the existing WorldB_EntryAlley asphalt (top at y=0.02) as a distinct
             // paved floor layer, deliberately avoiding any edit to that already-reviewed object.
             built.Add(Block(root.transform, "WorldC_AlleyFloor", new Vector3(0f, 0.03f, -110f), new Vector3(10f, 0.04f, 28f), materials["sidewalk"]));

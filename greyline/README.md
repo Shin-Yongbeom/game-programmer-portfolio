@@ -10,13 +10,15 @@ Unity 6 / HDRP 기반으로 1인 개발 중이며, 이 저장소는 열람용으
 - **엔진**: Unity 6.3 LTS (`6000.3.23f1`) / HDRP 17.3 / Input System
 - **언어**: C#
 - **범위**: 런타임 C# 약 100개 파일 / 약 15,800 LOC
-- **역할**: 1인 개발 — 게임플레이 시스템 설계·구현 전담, AI 에이전트를 생산·검증 파이프라인에 통합
+- **역할**: 1인 개발 — 게임플레이 시스템 아키텍처·설계 직접 결정, 구현은 AI 도구(Claude/Codex)를 페어로 활용, 검증 자동화 파이프라인 직접 구축
 
 ---
 
 ## 담당 및 기여
 
-이 저장소의 모든 C#는 직접 작성했습니다. 핵심 기여:
+전투·적 AI·세이브 등 게임플레이 시스템의 아키텍처와 판정 규칙, 권한 경계를 직접 설계했습니다.
+구현은 Claude/Codex를 페어 프로그래밍 도구로 활용해 1인 개발 속도를 확보했고, 모든 코드를
+이해하고 직접 유지보수·리팩터링하고 있습니다. 아래 설계 결정과 자동 검증 체계는 제 몫입니다.
 
 | 영역 | 내용 |
 |---|---|
@@ -27,7 +29,7 @@ Unity 6 / HDRP 기반으로 1인 개발 중이며, 이 저장소는 열람용으
 | 방어·카운터 | 가드/가드브레이크/타이밍 카운터/자세 붕괴, 우선순위 resolver |
 | 환경 처형 | World가 지점 소유, Combat이 거리·각도·예약·결과 판정, 파트너 IK 정렬 |
 | 세션·진행·세이브 | 일시정지 UI(입력·카메라 격리), 선행/비용 기반 스킬, 인카운터 1회 보상, 체크포인트/휴식, 버전·체크섬 세이브 프로파일(원자적 교체·백업 복구·미저장 상태 추적) |
-| 데이터 오서링 | `ProductionProgression.asset`이 스킬·비용·선행·인카운터 ID·보상·로스터를 소유, validator가 중복/순환 ID·잘못된 전투값 거부 (`docs/CONTENT_AUTHORING.md`) |
+| 데이터 오서링 | 스킬·비용·선행·인카운터 ID·보상·로스터를 ScriptableObject 카탈로그로 정의, validator가 중복/순환 ID·잘못된 전투값 거부, ID는 세이브 식별자로 안정 유지 |
 | 미니게임 | 상태머신 4종 (다트/장기/스텔스/리듬), 설정 검증 테스트 |
 | 프로덕션 툴 | Editor 씬 빌더·검증기, Unity CLI 래퍼(PowerShell), 로그 기반 Play QA |
 
@@ -75,16 +77,17 @@ Recovery/Stagger 경계에서만 일어납니다.
 
 ---
 
-## 검증 방식 (AI-native 생산 루프)
+## 검증 자동화
 
-기본 생산 단위: **구현 → 컴파일 → 관련 validator → 필요 시 로그 기반 Play QA → feel/visual만 휴먼 리뷰**
+기본 루프: **구현 → 컴파일 → validator → 로그 기반 Play QA → feel·visual만 사람 판단**
 
-- Editor 툴과 Unity CLI(`Tools/*.ps1`)로 씬 조립·검증·리소스 프리플라이트를 자동화
-- AI 에이전트(Codex/Claude)를 툴 생성·콘텐츠 조립·회귀 검증에 통합, 사람은 전투 feel·시각 품질·
-  보스 재미의 최종 판단에 집중
-- 최신 검증 스냅샷: `docs/VERIFICATION.md`
-  (컴파일 0, 전투/캐릭터 validator 0 error·warning, 로그 기반 Play 18/18 웨이포인트 통과,
-  일시정지 입력 격리·스킬 효과·보상 중복 제거·세이브 잠금파일 복구까지 자동 검증)
+- `Assets/Editor/`의 씬 빌더와 validator가 데이터 무결성(고유 attack id, acyclic combo graph,
+  유효한 hit shape/contact source, 스킬 선행·순환 ID, 잘못된 전투값)을 컴파일 단계에서 거부
+- `Tools/*.ps1`가 Unity를 batchmode로 띄워 빌드·Play QA를 실행하고, 종료 코드와 로그 성공
+  마커를 함께 확인 (마커 없이 종료 0이면 실패로 판정). 이 래퍼는 Unity 없이 도는 회귀 픽스처로
+  자체 테스트
+- Play QA는 실제 씬 콜라이더/CharacterController 위에서 주입 입력으로 히트 타이밍·회피 변위·
+  카운터·세이브 롤백까지 로그로 검증. 사람은 타격감·가독성·보스 재미만 판단
 
 ---
 
@@ -105,11 +108,8 @@ Assets/_Project/Tests/    미니게임 로직·설정 검증 (Unity Test Framewo
 Assets/Editor/            씬 빌더, 검증기, Play QA 하네스
 Tools/                    Unity CLI 래퍼, 리소스 프리플라이트, 래퍼 픽스처 테스트 (PowerShell)
 docs/
-  COMBAT.md               전투 경험·런타임 규칙
-  COMBAT_CONTRACTS.md     시스템 간 public 계약
-  PRODUCTION_ENGINEERING.md  아키텍처 규칙·검증 루프
-  CONTENT_AUTHORING.md    인카운터·스킬·세이브 오서링 계약
-  VERIFICATION.md         최신 자동 검증 스냅샷
+  COMBAT.md               전투 경험·런타임 규칙·상태 우선순위
+  COMBAT_CONTRACTS.md     시스템 간 public 데이터 계약
 ```
 
 ## 빌드에 대해

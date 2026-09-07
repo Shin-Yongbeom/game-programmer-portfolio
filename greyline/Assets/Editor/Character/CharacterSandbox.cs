@@ -45,7 +45,7 @@ namespace Greyline.Character.EditorTools
             // Trailing Mixamo idle-return tail trimmed to the PlayerCombat gameplay budget
             // (Duration+RecoveryTime; see AttackDefinition/CharacterCombatValidator.ValidateAnimationBudgets).
             // Cut frame chosen from measured bone-velocity energy: a low-motion point right after
-            // the strike settles, at or under budget. See WORKLOG.md for current presentation gaps.
+            // the strike settles, at or under budget. Tracked separately as a presentation gap.
             new ClipSpec("Jab", "Combat/Jab.fbx", loop: false, keepHeight: false, trimEndFrame: 18),
             // Impact is ~0.97s. The current 1.18s gameplay budget preserves contact and a short
             // follow-through; trim only the trailing idle-return tail beyond that budget.
@@ -190,7 +190,7 @@ namespace Greyline.Character.EditorTools
                 // are not exposed on ModelImporterClipAnimation's public scripting API in
                 // Unity 6000.3.23f1 (compile error, not a runtime choice) -- only reachable via
                 // SerializedObject on the importer. Dropped for P0-2; log as tooling debt if the
-                // Running loop seam still visibly pops; track the current acceptance result in WORKLOG.md.
+                // Running loop seam still visibly pops; track as tooling debt.
                 clip.maskType = ClipAnimationMaskType.None;
 
                 if (spec.TrimEndFrame >= 0)

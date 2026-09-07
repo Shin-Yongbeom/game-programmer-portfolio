@@ -7,7 +7,7 @@ namespace Greyline.Save
 {
     /// <summary>
     /// File-backed save service for the systems vertical slice. Only GameFlags are persisted;
-    /// checkpoint, combat, physics and camera state are not (Docs/SYSTEMS_QUEST_INTERACTION_SAVE.md).
+    /// checkpoint, combat, physics and camera state are not.
     ///
     /// Writes are atomic (temp file → replace) and keep the previous file as <c>.bak</c>; Load
     /// falls back to <c>.bak</c> when the primary file is missing or unreadable. The data scope

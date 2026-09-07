@@ -33,4 +33,4 @@ Animation, camera, VFX, audio, and UI consume the resulting event/state. They do
 - UI owns feedback presentation only.
 
 Exact state, priority, slot, and contact/fallback rules belong to `COMBAT.md`; do not duplicate
-them here. Current implementation order is owned by `WORKLOG.md` and `Docs/ASTRA_START_HERE.md`.
+them here.
