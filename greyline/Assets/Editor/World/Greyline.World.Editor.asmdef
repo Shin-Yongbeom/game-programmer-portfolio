@@ -1,0 +1,23 @@
+{
+  "name": "Greyline.World.Editor",
+  "rootNamespace": "Greyline.World.EditorTools",
+  "references": [
+    "Greyline.Runtime",
+    "Greyline.Editor",
+    "Greyline.Character.Editor",
+    "Unity.InputSystem",
+    "Unity.RenderPipelines.Core.Runtime",
+    "Unity.RenderPipelines.HighDefinition.Runtime"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
